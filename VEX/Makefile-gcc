@@ -85,6 +85,8 @@ LIB_OBJS = 	priv/ir_defs.o                          \
 		priv/guest_s390_toIR.o			\
 		priv/guest_mips_toIR.o
 
+LIB_OBJS_MULTIARCH = priv/multiarch_main_main.o
+
 PUB_INCLUDES = -Ipub
 
 # Do not add any priv/host-ARCH or priv/guest-ARCH directories to this
@@ -125,12 +127,21 @@ CCFLAGS = -Wall -Wmissing-prototypes -Wstrict-prototypes -Wshadow \
 
 all: vex
 
+standalone: pub/config.h vex
+
+pub/config.h:
+	touch pub/config.h
+
 # Empty, needed for Valgrind
 install:
 
 scratch: clean all
 
-vex: libvex.a
+vex: libvex.a libvexmultiarch.a
+
+libvexmultiarch.a: $(LIB_OBJS_MULTIARCH)
+	rm -f libvexmultiarch.a
+	$(AR) crus libvexmultiarch.a $(LIB_OBJS_MULTIARCH)
 
 libvex.a: $(LIB_OBJS)
 	rm -f libvex.a
@@ -257,6 +268,10 @@ priv/ir_opt.o: $(ALL_HEADERS) priv/ir_opt.c
 priv/main_main.o: $(ALL_HEADERS) priv/main_main.c
 	$(CC) $(CCFLAGS) $(ALL_INCLUDES) -o priv/main_main.o \
 					 -c priv/main_main.c
+
+priv/multiarch_main_main.o: $(ALL_HEADERS) priv/multiarch_main_main.c
+	$(CC) $(CCFLAGS) $(ALL_INCLUDES) -o priv/multiarch_main_main.o \
+					 -c priv/multiarch_main_main.c
 
 priv/main_globals.o: $(ALL_HEADERS) priv/main_globals.c
 	$(CC) $(CCFLAGS) $(ALL_INCLUDES) -o priv/main_globals.o \
