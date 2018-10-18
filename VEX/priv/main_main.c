@@ -215,19 +215,6 @@ void LibVEX_Init (
    vassert(log_bytes);
    vassert(debuglevel >= 0);
 
-   vassert(vcon->iropt_verbosity >= 0);
-   vassert(vcon->iropt_level >= 0);
-   vassert(vcon->iropt_level <= 2);
-   vassert(vcon->iropt_unroll_thresh >= 0);
-   vassert(vcon->iropt_unroll_thresh <= 400);
-   vassert(vcon->guest_max_insns >= 1);
-   vassert(vcon->guest_max_insns <= 100);
-   vassert(vcon->guest_chase_thresh >= 0);
-   vassert(vcon->guest_chase_thresh < vcon->guest_max_insns);
-   vassert(vcon->guest_chase_cond == True 
-           || vcon->guest_chase_cond == False);
-   vassert(vcon->regalloc_version == 2 || vcon->regalloc_version == 3);
-
    /* Check that Vex has been built with sizes of basic types as
       stated in priv/libvex_basictypes.h.  Failure of any of these is
       a serious configuration error and should be corrected
@@ -289,12 +276,28 @@ void LibVEX_Init (
    vassert(sdiv32(-100, -7) == 14); /* not sure what this proves */
 
    /* Really start up .. */
+   LibVEX_Update_Control ( vcon );
    vex_debuglevel         = debuglevel;
-   vex_control            = *vcon;
    vex_initdone           = True;
    vexSetAllocMode ( VexAllocModeTEMP );
 }
 
+void LibVEX_Update_Control(const VexControl *vcon)
+{
+   vassert(vcon->iropt_verbosity >= 0);
+   vassert(vcon->iropt_level >= 0);
+   vassert(vcon->iropt_level <= 2);
+   vassert(vcon->iropt_unroll_thresh >= 0);
+   vassert(vcon->iropt_unroll_thresh <= 400);
+   vassert(vcon->guest_max_insns >= 1);
+   vassert(vcon->guest_max_insns <= 100);
+   vassert(vcon->guest_chase_thresh >= 0);
+   vassert(vcon->guest_chase_thresh < vcon->guest_max_insns);
+   vassert(vcon->guest_chase_cond == True
+           || vcon->guest_chase_cond == False);
+
+   vex_control            = *vcon;
+}
 
 /* --------- Make a translation. --------- */
 

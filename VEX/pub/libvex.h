@@ -629,6 +629,9 @@ extern void LibVEX_Init (
    const VexControl* vcon
 );
 
+/* Update the global VexControl */
+extern void LibVEX_Update_Control (const VexControl * );
+
 
 /*-------------------------------------------------------*/
 /*--- Make a translation                              ---*/
